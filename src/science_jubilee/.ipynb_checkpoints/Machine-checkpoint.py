@@ -163,18 +163,15 @@ class Machine:
         self.crash_handler = crash_handler
 
         self._absolute_positioning = True
-        self._absolute_extrusion = (
-            True  # Extrusion positioning is set separately from other axes
-        )
+        self._absolute_extrusion = (True) # Extrusion positioning is set separately from other axes
         self._configured_axes = None
         self._configured_tools = None
         self._active_tool_index = None  # Cached value under the @property.
         self._tool_z_offsets = None  # Cached value under the @property.
         self._axis_limits = (None, None, None)  # Cached value under the @property.
-        self.axes_homed = [
-            False
-        ] * 4  # We have at least X/Y/Z/U axes to home. Additional axes handled below in connect()
+        self.axes_homed = [False] * 4  # We have at least X/Y/Z/U axes to home. Additional axes handled below in connect()
         self.deck = None
+        
         # TODO: this is confusingly named
         self.tools = {}  # this is the list of available tools
         self.tool = None  # this is the current active tool
@@ -193,7 +190,6 @@ class Machine:
             self.load_deck(deck_config)
 
         self.connect()
-
         self._set_absolute_positioning()  # force=True)
 
     def connect(self):
@@ -435,9 +431,7 @@ class Machine:
     ##########################################
     #                BED PLATE
     ##########################################
-    def load_deck(
-        self,
-        deck_filename: str,
+    def load_deck(self, deck_filename: str,
         path: str = os.path.join(os.path.dirname(__file__), "decks", "deck_definition"),
     ):
         """Load a deck configuration file onto the machine.
@@ -639,35 +633,17 @@ class Machine:
 
         ### test to see if we can get the number of axis home using the pop_machine_state(self) !! MP 07/25/23
 
-    def home_xyu(self):
-        """Home the XYU axes. Home Y before X to prevent possibility of crashing into the tool rack."""
-        self.gcode("G28 Y")
-        self.gcode("G28 X")
-        self.gcode("G28 U")
-        self._set_absolute_positioning()
-        # Update homing state. Pull Z from the object model which will not create a race condition.
-        z_home_status = json.loads(self.gcode('M409 K"move.axes[].homed"'))["result"][2]
-        self.axes_homed = [True, True, z_home_status, True]
-
     def home_x(self):
         """Home the X axis"""
-        cmd = "G28 X"
-        self.gcode(cmd)
+        self.gcode("G28 X")
 
     def home_y(self):
         """Home the Y axis"""
-        cmd = "G28 Y"
-        self.gcode(cmd)
+        self.gcode("G28 Y")
 
     def home_u(self):
         """Home the U (tool) axis"""
-        cmd = "G28 U"
-        self.gcode(cmd)
-
-    def home_v(self):
-        """Home the V axis"""
-        cmd = "G28 V"
-        self.gcode(cmd)
+        self.gcode("G28 U")
 
     def home_z(self):
         """Home the Z axis.
@@ -680,11 +656,15 @@ class Machine:
             print("The deck needs to be empty of all labware before proceeding.")
         self._set_absolute_positioning()
 
-    def home_e(self):
-        """
-        Home the extruder axis (syringe)
-        """
-        pass
+    def home_xyu(self):
+        """Home the XYU axes. Home Y before X to prevent possibility of crashing into the tool rack."""
+        self.home_u()
+        self.home_y()
+        self.home_x()
+        self._set_absolute_positioning()
+        # Update homing state. Pull Z from the object model which will not create a race condition.
+        z_home_status = json.loads(self.gcode('M409 K"move.axes[].homed"'))["result"][2]
+        self.axes_homed = [True, True, z_home_status, True]
 
     def home_in_place(self, *args: str):
         """Set the current location of a machine axis or axes to 0."""
@@ -782,10 +762,9 @@ class Machine:
         v: float = None,
         s: float = 6000,
         param: str = None,
-        wait: bool = True,
+        wait: bool = False,
     ):
         """Move to an absolute X/Y/Z/E/V position.
-
         :param x: x position on the bed, in whatever units have been set (default mm)
         :type x: float, optional
         :param y: y position on the bed, in whatever units have been set (default mm)
@@ -798,25 +777,22 @@ class Machine:
         :type v: float, optional
         :param s: speed at which to move (default 6000 mm/min)
         :type s: float, optional
-
         """
         self._set_absolute_positioning()
-
         self._move_xyzev(x=x, y=y, z=z, e=e, v=v, s=s, param=param, wait=wait)
 
     def move(
         self,
-        dx: float = 0,
-        dy: float = 0,
-        dz: float = 0,
-        de: float = 0,
-        dv: float = 0,
+        dx: float = None,
+        dy: float = None,
+        dz: float = None,
+        de: float = None,
+        dv: float = None,
         s: float = 6000,
         param: str = None,
-        wait: bool = True,
+        wait: bool = False,
     ):
         """Move relative to the current position
-
         :param dx: change in x position, in whatever units have been set (default mm)
         :type dx: float, optional
         :param dy: change in y position, in whatever units have been set (default mm)
@@ -837,7 +813,7 @@ class Machine:
             pos = self.get_position()
             if (
                 x_limit
-                and dx != 0
+                and dx != None
                 and (
                     (float(pos["X"]) + dx > x_limit[1])
                     or (float(pos["X"]) + dx < x_limit[0])
@@ -846,7 +822,7 @@ class Machine:
                 raise MachineStateError("Error: Relative move exceeds X axis limit!")
             if (
                 y_limit
-                and dy != 0
+                and dy != None
                 and (
                     (float(pos["Y"]) + dy > y_limit[1])
                     or (float(pos["Y"]) + dy < y_limit[0])
@@ -855,29 +831,26 @@ class Machine:
                 raise MachineStateError("Error: Relative move exceeds Y axis limit!")
             if (
                 z_limit
-                and dz != 0
+                and dz != None
                 and (
                     (float(pos["Z"]) + dz > z_limit[1])
                     or (float(pos["Z"]) + dz < z_limit[0])
                 )
             ):
                 raise MachineStateError("Error: Relative move exceeds Z axis limit!")
+    
         self._set_relative_positioning()
-
         self._move_xyzev(x=dx, y=dy, z=dz, e=de, v=dv, s=s, param=param, wait=wait)
 
     def dwell(self, t: float, millis: bool = True):
         """Pauses the machine for a period of time.
-
         :param t: time to pause, in milliseconds by default
         :type t: float
         :param millis: boolean, set to false to use seconds. default unit is milliseconds.
         :type millis: bool, optional
         """
-
         param = "P" if millis else "S"
         cmd = f"G4 {param}{t}"
-
         self.gcode(cmd)
 
     def safe_z_movement(self):
@@ -892,9 +865,7 @@ class Machine:
 
     def _get_tool_index(self, tool_item: Union[int, Tool, str]):
         """Return the tool index from the provided tool item.
-
-        This method is allows the user to call a toll by its index, its name, or to use a :class:`Tool` object
-        directly.
+        This method is allows the user to call a toll by its index, its name, or to use a :class:`Tool` object directly.
 
         :param tool_item: The tool index, name, or :class:`Tool` object
         :type tool_item: Union[int, Tool, str]
@@ -1069,12 +1040,12 @@ class Machine:
     # ***************MACROS***************
     def tool_lock(self):
         """Runs Jubilee tool lock macro. Assumes tool_lock.g macro exists."""
-        cmd = 'M98 P"0:/macros/tool_lock.g"'
+        cmd = 'M98 P"0:/macros/tool_manager/tool_lock.g"'
         self.gcode(cmd)
 
     def tool_unlock(self):
         """Runs Jubilee tool unlock macro. Assumes tool_unlock.g macro exists."""
-        cmd = 'M98 P"0:/macros/tool_unlock.g"'
+        cmd = 'M98 P"0:/macros/tool_manager/tool_unlock.g"'
         self.gcode(cmd)
 
     def disconnect(self):

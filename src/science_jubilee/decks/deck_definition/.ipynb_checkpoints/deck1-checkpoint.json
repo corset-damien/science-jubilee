@@ -1,0 +1,38 @@
+{
+    "name": "Deck1",
+    "description": "Attempt1",
+    "type": "SLAS Non Official",
+    "deck_offset": [
+        0.0,
+        0.0
+    ],
+    "material": {
+        "deck": "",
+        "mask": "a"
+    },
+    "slot_reference_corner": "bottom_left",
+    "safe_z_clearance": 10.0,
+    "slots": {
+        "0": {
+            "coordinates": [
+                100.0,
+                101.0
+            ],
+            "shape": "rectangle",
+            "width": 50.0,
+            "length": 51.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "1": {
+            "coordinates": [
+                200.0,
+                200.0
+            ],
+            "shape": "circle",
+            "diameter": 50.0,
+            "has_labware": false,
+            "labware": null
+        }
+    }
+}

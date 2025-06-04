@@ -1,37 +1,42 @@
 {
     "bedType": "Lab Automation Deck",
     "deckSlots": {
-        "total": 6,
+        "total": 7,
         "type": "SLAS Standard Labware"
     },
     "slots": {
         "0": {
-            "offset": [20.0, 7.3],
+            "offset": [11.0, 12.0],
             "has_labware": false,
             "labware": null
         },
         "1": {
-            "offset": [160.0, 7.3],
+            "offset": [11.0, 150],
             "has_labware": false,
             "labware": null
         },
         "2": {
-            "offset": [20.0, 107.3],
+            "offset": [204.0, 12.0],
             "has_labware": false,
             "labware": null
         },
         "3": {
-            "offset": [160.0, 107.3],
+            "offset": [204.0, 150.0],
             "has_labware": false,
             "labware": null
         },
         "4": {
-            "offset": [20.0, 207.3],
+            "offset": [150.0, 53.0],
             "has_labware": false,
             "labware": null
         },
         "5": {
-            "offset": [160.0, 207.3],
+            "offset": [150.0, 150.0],
+            "has_labware": false,
+            "labware": null
+        },
+        "6": {
+            "offset": [150.0, 247.0],
             "has_labware": false,
             "labware": null
         }

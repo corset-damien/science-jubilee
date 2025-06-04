@@ -1,0 +1,91 @@
+{
+    "name": "Experience1",
+    "description": "Simulation de l'éclairage + prise de photos",
+    "type": "SLAS",
+    "deck_offset": [
+        0.0,
+        0.0
+    ],
+    "material": {
+        "deck": "Plastic",
+        "mask": ""
+    },
+    "slot_reference_corner": "bottom_left",
+    "safe_z_clearance": 10.0,
+    "slots": {
+        "0": {
+            "coordinates": [
+                8.5,
+                12.5
+            ],
+            "shape": "rectangle",
+            "width": 0.0,
+            "length": 0.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "1": {
+            "coordinates": [
+                8.5,
+                150.0
+            ],
+            "shape": "rectangle",
+            "width": 0.0,
+            "length": 0.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "2": {
+            "coordinates": [
+                201.5,
+                12.5
+            ],
+            "shape": "rectangle",
+            "width": 0.0,
+            "length": 0.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "3": {
+            "coordinates": [
+                201.5,
+                150.0
+            ],
+            "shape": "rectangle",
+            "width": 0.0,
+            "length": 0.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "4": {
+            "coordinates": [
+                150.0,
+                45.0
+            ],
+            "shape": "circle",
+            "diameter": 0.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "5": {
+            "coordinates": [
+                150.0,
+                145.0
+            ],
+            "shape": "circle",
+            "diameter": 0.0,
+            "has_labware": false,
+            "labware": null
+        },
+        "6": {
+            "coordinates": [
+                150.0,
+                245.0
+            ],
+            "shape": "circle",
+            "diameter": 0.0,
+            "has_labware": false,
+            "labware": null
+        }
+    }
+}

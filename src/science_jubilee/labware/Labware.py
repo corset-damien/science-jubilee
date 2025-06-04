@@ -346,7 +346,7 @@ class Labware(WellSet):
             self.metadata()["displayCategory"] + ": " + self.parameters()["loadName"]
         )
         if self.slot is not None:
-            display = display + " " + f" on {self.slot}"
+            display = display + " " + f"on {self.slot}"
         return display
 
     def _create_rows_and_columns(self):
@@ -557,15 +557,13 @@ class Labware(WellSet):
 
     @offset.setter
     def offset(self, new_offset):
-        """Sets the offset of the labware to the indicated values and updates the offset of each well in the labware
+        """Sets the offset of the labware (relative to slot), but does NOT modify the local coordinates of wells.
 
-        :param new_offset: A tuple of floats with the new offset of the labware
-        :type new_offset: Tuple[float]
+        WARNING: Do NOT apply the offset directly to Well.x/.y/.z. Well coordinates must always remain relative to the labware origin.
+        The offset is only used for machine coordinate calculations (handled in Deck).
         """
         self._offset = new_offset
-        if new_offset is not None:
-            for w in self:
-                w.apply_offset(new_offset)
+        # Do NOT update well.x, well.y, well.z here! All well coordinates must remain local.
 
     def add_slot(self, slot_):
         """Add name of deck slot after labware has been loaded
@@ -775,6 +773,22 @@ class Labware(WellSet):
         """
         path = os.path.join(os.path.dirname(__file__), "labware_definition")
         return os.listdir(path)
+
+    def get_well_coordinates(self, well_id: str) -> Tuple[float, float, float]:
+        """
+        Return the (x, y, z) coordinates of the well identified by well_id, relative to the slot origin (not machine coordinates).
+
+        Args:
+            well_id (str): The well identifier (e.g., 'A1').
+        Returns:
+            Tuple[float, float, float]: The (x, y, z) coordinates of the well.
+        Raises:
+            KeyError: If the well does not exist in this labware.
+        """
+        if well_id not in self.wells:
+            raise KeyError(f"Well '{well_id}' not found in this labware.")
+        well = self.wells[well_id]
+        return (well.x, well.y, well.z)
 
 
 ## Adapted from Opentrons API  opentrons.types##

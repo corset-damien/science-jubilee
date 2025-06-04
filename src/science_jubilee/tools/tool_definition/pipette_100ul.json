@@ -1,0 +1,21 @@
+{
+  "name": "pipette_100ul",
+  "description": "Pipette de 100 microlitres",
+  "offset": {
+    "x": 1.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "bounds": {
+    "x_min": -15,
+    "x_max": 15,
+    "y_min": -15,
+    "y_max": 15,
+    "z_min": 0,
+    "z_max": 150
+  },
+  "metadata": {
+    "max_volume_ul": 100,
+    "manufacturer": "Acme Pipettes"
+  }
+}
